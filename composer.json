@@ -36,5 +36,6 @@
         "Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider"
       ]
     }
-  }
+  },
+  "version": "1.0.0"
 }
