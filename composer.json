@@ -25,6 +25,7 @@
     "illuminate/support": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
     "illuminate/container": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
     "illuminate/http": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
+    "illuminate/config": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
     "guzzlehttp/guzzle": "8.0.x-dev",
     "phpoption/phpoption": "^1.9@dev",
     "vlucas/phpdotenv": "^5.6@dev"

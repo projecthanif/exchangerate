@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Projecthanif\ExchangeRate;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Projecthanif\ExchangeRate\Exceptions\CurrencyException;
+
 
 class CurrencyConverter
 {
@@ -24,9 +26,18 @@ class CurrencyConverter
 
     private string $exchangeRateUrl;
 
-    public function __construct()
+    /**
+     * @throws CurrencyException
+     */
+    public function __construct(Config $config)
     {
-        $this->exchangeRateUrl = rtrim(env('EXCHANGERATE_URL'), "/") . "/" . env('EXCHANGERATE_API_KEY');
+        $url = $config::get('projecthanif-exchangerate.exchangerate.url');
+        $api_key = $config::get('projecthanif-exchangerate.exchangerate.api_key');
+
+        if ($url === null || $api_key === null) {
+            throw new CurrencyException('Configs not provided');
+        }
+        $this->exchangeRateUrl = rtrim($url, "/") . "/" . $api_key;
     }
 
     /**
