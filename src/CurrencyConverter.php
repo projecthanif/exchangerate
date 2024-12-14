@@ -88,10 +88,23 @@ class CurrencyConverter
         return $this;
     }
 
-    public function currencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): self
+    public function currencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): string|self
     {
-        $this->currencyCode = $currencyCode;
-        $this->pairWithCurrencyCode = $pairWithCurrencyCode ?? $this->pairWithCurrencyCode;
-        return $this;
+        try {
+            if (count($currencyCode) !== 3) {
+                throw new \Exception("Currency Code must be 3 digits.");
+            }
+
+            if ($pairWithCurrencyCode !== null && count($pairWithCurrencyCode) !== 3) {
+                throw new \Exception("Currency Code must be 3 digits.");
+            }
+
+            $this->currencyCode = $currencyCode;
+            $this->pairWithCurrencyCode = $pairWithCurrencyCode ?? $this->pairWithCurrencyCode;
+            return $this;
+
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 }

@@ -1,1 +1,1 @@
-# A currency Converter Package
+# A currency Converter Package for Exchange Rate Api 
