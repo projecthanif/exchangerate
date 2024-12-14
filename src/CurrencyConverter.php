@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Projecthanif\CurrencyConverter;
+namespace Projecthanif\ExchangeRate;
 
 use Illuminate\Support\Facades\Http;
+use Projecthanif\ExchangeRate\Exceptions\CurrencyException;
 
 class CurrencyConverter
 {
@@ -20,93 +21,102 @@ class CurrencyConverter
      * **/
     private string $pairWithCurrencyCode = 'EUR';
 
+
+    private string $exchangeRateUrl;
+
+    public function __construct()
+    {
+        $this->exchangeRateUrl = rtrim(env('EXCHANGERATE_URL'), "/") . "/" . env('EXCHANGERATE_API_KEY');
+    }
+
+    /**
+     * @throws CurrencyException
+     */
     public function standardResponse(string $currencyCode): mixed
     {
-        $this->currencyCode($currencyCode);
-        try {
-            $init = Http::get(
-                env('EXCHANGERATE_URL') . env('EXCHANGERATE_API_KEY') . "/latest/{$this->currencyCode}"
-            );
+        $this->validateCurrencyCode($currencyCode);
 
-            $response = $init->json();
+        $response = Http::get($this->exchangeRateUrl . "/latest/" . $this->currencyCode);
 
-            if ($response['result'] === "error") {
-                throw new \Exception($response['error-type']);
-            }
-
-            return $response;
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
+        if ($response->failed()) {
+            throw new CurrencyException("Failed to fetch currency data.");
         }
+
+        $data = $response->json();
+        if (isset($data['error']) && $data['result'] === "error") {
+            throw new CurrencyException($data['message'] ?? 'Unknown error');
+        }
+        return $data;
 
     }
 
+    /**
+     * @throws CurrencyException
+     */
     public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): mixed
     {
-        $this->currencyFromTo($currencyCode, $pairWithCurrencyCode);
-        try {
+        $this->validateCurrencyFromTo($currencyCode, $pairWithCurrencyCode);
 
-            $init = Http::get(
-                env('EXCHANGERATE_URL') . env('EXCHANGERATE_API_KEY') .
-                "/pair/{$this->currencyCode}/{$this->pairWithCurrencyCode}"
-            );
+        $response = Http::get("$this->exchangeRateUrl/pair/$this->currencyCode/$this->pairWithCurrencyCode");
 
-            $response = $init->json();
-
-            if ($response['result'] === "error") {
-                throw new \Exception($response['error-type']);
-            }
-
-            return $response;
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
+        if ($response->failed()) {
+            throw new CurrencyException("Failed to fetch currency data.");
         }
+
+        $data = $response->json();
+
+        if (isset($data['error']) && $data['result'] === "error") {
+            throw new CurrencyException($data['message'] ?? 'Unknown error');
+        }
+        return $data;
     }
 
+    /**
+     * @throws CurrencyException
+     */
     public function pairConversionWithAmount(float $amount, string $currencyCode, string $pairWithCurrencyCode): mixed
     {
-        try {
 
-            $init = Http::get(
-                env('EXCHANGERATE_URL') . env('EXCHANGERATE_API_KEY') .
-                "/pair/{$this->currencyCode}/{$this->pairWithCurrencyCode}/$amount"
-            );
+        $response = Http::get("$this->exchangeRateUrl/pair/$this->currencyCode/$this->pairWithCurrencyCode/$amount");
 
-            $response = $init->json();
-
-            if ($response['result'] === "error") {
-                throw new \Exception($response['error-type']);
-            }
-
-            return $response;
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
+        if ($response->failed()) {
+            throw new CurrencyException("Failed to fetch currency data.");
         }
+
+        $data = $response->json();
+
+        if (isset($data['error']) && $data['result'] === "error") {
+            throw new CurrencyException($data['message'] ?? 'Unknown error');
+        }
+
+
+        return $data;
     }
 
-    private function currencyCode(string $currencyCode): void
+    /**
+     * @throws CurrencyException
+     */
+    private function validateCurrencyCode(string $currencyCode): void
     {
-        $this->currencyCode = $currencyCode;
+        if (strlen($currencyCode) !== 3) {
+            throw new CurrencyException("Currency Code must be 3 characters long.");
+        }
+
+        $this->currencyCode = strtoupper($currencyCode);
     }
 
-    private function currencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): void
+    /**
+     * @throws CurrencyException
+     */
+    private function validateCurrencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): void
     {
-        try {
-            if (strlen($currencyCode) !== 3) {
-                throw new \Exception("Currency Code must be 3 digits.");
+        $this->validateCurrencyCode($currencyCode);
+
+        if ($pairWithCurrencyCode !== null) {
+            if (strlen($pairWithCurrencyCode) !== 3) {
+                throw new CurrencyException("Pair Currency Code must be 3 characters long.");
             }
-
-            if ($pairWithCurrencyCode !== null && strlen($pairWithCurrencyCode) !== 3) {
-                throw new \Exception("Currency Code must be 3 digits.");
-            }
-
-            $this->currencyCode = $currencyCode;
-            $this->pairWithCurrencyCode = $pairWithCurrencyCode ?? $this->pairWithCurrencyCode;
-            return;
-
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-            return;
+            $this->pairWithCurrencyCode = strtoupper($pairWithCurrencyCode);
         }
     }
 }

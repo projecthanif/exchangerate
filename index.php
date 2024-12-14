@@ -6,7 +6,7 @@ require __DIR__ . "/vendor/autoload.php";
 use Dotenv\Dotenv;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Facade;
-use Projecthanif\CurrencyConverter\CurrencyConverter;
+use Projecthanif\ExchangeRate\CurrencyConverter;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
