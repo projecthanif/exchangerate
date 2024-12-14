@@ -20,8 +20,9 @@ class CurrencyConverter
      * **/
     private string $pairWithCurrencyCode = 'EUR';
 
-    public function standardResponse(): mixed
+    public function standardResponse(string $currencyCode): mixed
     {
+        $this->currencyCode($currencyCode);
         try {
             $init = Http::get(
                 env('EXCHANGERATE_URL') . env('EXCHANGERATE_API_KEY') . "/latest/{$this->currencyCode}"
@@ -40,8 +41,9 @@ class CurrencyConverter
 
     }
 
-    public function conversionFromTo(): mixed
+    public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): mixed
     {
+        $this->currencyFromTo($currencyCode, $pairWithCurrencyCode);
         try {
 
             $init = Http::get(
@@ -61,7 +63,7 @@ class CurrencyConverter
         }
     }
 
-    public function pairConversionWithAmount(float $amount): mixed
+    public function pairConversionWithAmount(float $amount, string $currencyCode, string $pairWithCurrencyCode): mixed
     {
         try {
 
@@ -82,29 +84,29 @@ class CurrencyConverter
         }
     }
 
-    public function currencyCode(string $currencyCode): self
+    private function currencyCode(string $currencyCode): void
     {
         $this->currencyCode = $currencyCode;
-        return $this;
     }
 
-    public function currencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): string|self
+    private function currencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): void
     {
         try {
-            if (count($currencyCode) !== 3) {
+            if (strlen($currencyCode) !== 3) {
                 throw new \Exception("Currency Code must be 3 digits.");
             }
 
-            if ($pairWithCurrencyCode !== null && count($pairWithCurrencyCode) !== 3) {
+            if ($pairWithCurrencyCode !== null && strlen($pairWithCurrencyCode) !== 3) {
                 throw new \Exception("Currency Code must be 3 digits.");
             }
 
             $this->currencyCode = $currencyCode;
             $this->pairWithCurrencyCode = $pairWithCurrencyCode ?? $this->pairWithCurrencyCode;
-            return $this;
+            return;
 
         } catch (\Exception $exception) {
-            return $exception->getMessage();
+            echo $exception->getMessage();
+            return;
         }
     }
 }

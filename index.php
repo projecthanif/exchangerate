@@ -22,6 +22,6 @@ Facade::setFacadeApplication($app);
 $check = new CurrencyConverter();
 
 $res = $check
-    ->currencyFromTo('USD', "NGN");
+    ->standardResponse('NGN');
 
 var_dump($res);
