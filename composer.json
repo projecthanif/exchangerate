@@ -1,0 +1,32 @@
+{
+  "name": "projecthanif/exchangerate",
+  "description": "A currency converter package",
+  "keywords": [
+    "php",
+    "laravel",
+    "currency converter",
+    "currency"
+  ],
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Projecthanif\\ExchangeRate\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "projecthanif",
+      "email": "iamustapha213@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.0",
+    "illuminate/support": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
+    "illuminate/container": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
+    "illuminate/http": "~5.6.34|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0",
+    "guzzlehttp/guzzle": "8.0.x-dev",
+    "phpoption/phpoption": "^1.9@dev",
+    "vlucas/phpdotenv": "^5.6@dev"
+  }
+}
