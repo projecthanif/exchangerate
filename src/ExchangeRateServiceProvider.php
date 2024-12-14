@@ -12,14 +12,14 @@ class ExchangeRateServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/projecthanif-exchangerate.php' => config_path('projecthanif-exchangerate.php'),
-        ], 'projecthanif-exchangerate');
+        ], 'config');
     }
 
     public function register()
     {
         $this->mergeConfigFrom(
             __DIR__ . '/../config/projecthanif-exchangerate.php',
-            'projecthanif-exchangerate'
+            'config'
         );
     }
 }

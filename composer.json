@@ -8,6 +8,7 @@
     "currency"
   ],
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "license": "MIT",
   "autoload": {
     "psr-4": {
@@ -42,12 +43,11 @@
   },
   "scripts": {
     "post-update-cmd": [
-      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=config --force"
+      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=projecthanif-exchangerate --force"
     ],
     "post-install-cmd": [
-      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=config --force"
+      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=projecthanif-exchangerate --force"
     ]
   },
-
   "version": "1.0.0"
 }
