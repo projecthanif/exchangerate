@@ -17,9 +17,10 @@ trait ExchangeRateHelper
     {
         $data = $this->data;
         if ($currencyCode !== null) {
-            return $data['conversion_rates'][$currencyCode];
+            $rates = $data['conversion_rates'] ?? $data['conversion_rate'];
+            return $rates[$currencyCode];
         }
-        return $data['conversion_rates'];
+        return $data['conversion_rates'] ?? $data['conversion_rate'];
     }
 
     /**

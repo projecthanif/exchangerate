@@ -38,7 +38,7 @@ Facade::setFacadeApplication($app);
 
 try {
     $converter = new ExchangeRate(new Config());
-    $response = $converter->standardResponse('NGN')->getConversionRate();
+    $response = $converter->conversionFromTo('NGN', 'USD')->getConversionRate();
     dd($response);
 } catch (\Projecthanif\ExchangeRate\Exceptions\CurrencyException $e) {
     dd($e->getMessage());

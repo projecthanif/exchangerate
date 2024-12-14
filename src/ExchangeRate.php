@@ -77,7 +77,7 @@ class ExchangeRate
      * @return ExchangeRate
      * @throws CurrencyException
      */
-    public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): mixed
+    public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): self
     {
         $this->validateCurrencyFromTo($currencyCode, $pairWithCurrencyCode);
 
@@ -92,7 +92,10 @@ class ExchangeRate
         if (isset($data['error']) && $data['result'] === "error") {
             throw new CurrencyException($data['message'] ?? 'Unknown error');
         }
-        return $data;
+
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
