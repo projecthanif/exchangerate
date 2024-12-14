@@ -11,7 +11,7 @@ class ExchangeRateServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/projecthanif-exchangerate.php' => config_path('projecthanif-exchangerate.php'),
+            __DIR__ . '/../config/projecthanif-exchangerate.php' => config_path('projecthanif-exchangerate.php', 'config'),
         ]);
     }
 }

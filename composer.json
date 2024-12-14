@@ -40,5 +40,14 @@
       ]
     }
   },
+  "scripts": {
+    "post-update-cmd": [
+      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=config --force"
+    ],
+    "post-install-cmd": [
+      "@php artisan vendor:publish --provider=\"Projecthanif\\ExchangeRate\\ExchangeRateServiceProvider\" --tag=config --force"
+    ]
+  },
+
   "version": "1.0.0"
 }
