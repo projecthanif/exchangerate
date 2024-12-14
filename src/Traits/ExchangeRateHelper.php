@@ -11,9 +11,8 @@ trait ExchangeRateHelper
     /**
      * @param null|string $currencyCode
      * @return mixed
-     * @throws CurrencyException
      */
-    public function getConversionRate(?string $currencyCode = null): mixed
+    public function getConversionRates(?string $currencyCode = null): mixed
     {
         $data = $this->data;
         if ($currencyCode !== null) {
@@ -22,6 +21,19 @@ trait ExchangeRateHelper
         }
         return $data['conversion_rates'] ?? $data['conversion_rate'];
     }
+
+    public function getConversionResult(): mixed
+    {
+        $data = $this->data;
+        return $data['conversion_result'];
+    }
+
+    public function getConversionRate(): mixed
+    {
+        $data = $this->data;
+        return $data['conversion_rate'];
+    }
+
 
     /**
      * @param string $currencyCode

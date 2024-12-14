@@ -30,8 +30,9 @@ class ExchangeRate
 
     private string $exchangeRateUrl;
 
-
     private array $data;
+
+    public array $supportedCodes = [];
 
     /**
      * @throws CurrencyException
@@ -72,14 +73,14 @@ class ExchangeRate
     }
 
     /**
-     * @param string $currencyCode
-     * @param string|null $pairWithCurrencyCode
+     * @param string $currencyCodeFrom
+     * @param string|null $currencyCodeTo
      * @return ExchangeRate
      * @throws CurrencyException
      */
-    public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): self
+    public function conversionFromTo(string $currencyCodeFrom, ?string $currencyCodeTo = null): self
     {
-        $this->validateCurrencyFromTo($currencyCode, $pairWithCurrencyCode);
+        $this->validateCurrencyFromTo($currencyCodeFrom, $currencyCodeTo);
 
         $response = Http::get("$this->exchangeRateUrl/pair/$this->currencyCode/$this->pairWithCurrencyCode");
 
@@ -100,15 +101,15 @@ class ExchangeRate
 
     /**
      * @param float $amount
-     * @param string $currencyCode
-     * @param string $pairWithCurrencyCode
+     * @param string $currencyCodeFrom
+     * @param string $currencyCodeTo
      * @return ExchangeRate
      * @throws CurrencyException
      */
-    public function pairConversionWithAmount(float $amount, string $currencyCode, string $pairWithCurrencyCode): self
+    public function pairConversionWithAmount(float $amount, string $currencyCodeFrom, string $currencyCodeTo): self
     {
 
-        $this->conversionFromTo($currencyCode, $pairWithCurrencyCode);
+        $this->conversionFromTo($currencyCodeFrom, $currencyCodeTo);
 
         $response = Http::get("$this->exchangeRateUrl/pair/$this->currencyCode/$this->pairWithCurrencyCode/$amount");
 
@@ -122,7 +123,29 @@ class ExchangeRate
             throw new CurrencyException($data['message'] ?? 'Unknown error');
         }
 
-        $this->data;
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * @throws CurrencyException
+     */
+    public function getSupportedCodes(): self
+    {
+        $response = Http::get($this->exchangeRateUrl . "/codes");
+
+        if ($response->failed()) {
+            throw new CurrencyException("Failed to fetch currency codes data.");
+        }
+
+        $data = $response->json();
+
+        if ($data['result'] === "error") {
+            throw new CurrencyException($data['error-type'] ?? 'Unknown error');
+        }
+
+        $this->supportedCodes = $data['supported_codes'];
+
         return $this;
     }
 
