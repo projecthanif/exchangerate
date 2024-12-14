@@ -6,7 +6,7 @@ require __DIR__ . "/vendor/autoload.php";
 use Dotenv\Dotenv;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Facade;
-use Projecthanif\ExchangeRate\CurrencyConverter;
+use Projecthanif\ExchangeRate\ExchangeRate;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Config\Repository as ConfigRepository;
 
@@ -36,9 +36,10 @@ $app->singleton('config', function () use ($config) {
 
 Facade::setFacadeApplication($app);
 
-$converter = new CurrencyConverter(new Config());
 try {
-    $converter->standardResponse('USD');
+    $converter = new ExchangeRate(new Config());
+    $response = $converter->standardResponse('NGN')->getConversionRate();
+    dd($response);
 } catch (\Projecthanif\ExchangeRate\Exceptions\CurrencyException $e) {
     dd($e->getMessage());
 }

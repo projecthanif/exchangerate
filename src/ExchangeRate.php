@@ -6,25 +6,32 @@ namespace Projecthanif\ExchangeRate;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Projecthanif\ExchangeRate\Exceptions\CurrencyException;
+use Projecthanif\ExchangeRate\Traits\ExchangeRateHelper;
 
 
-class CurrencyConverter
+class ExchangeRate
 {
-    /*
+    use ExchangeRateHelper;
+
+    /**
      * Currency Code
      * Default value set to United States Currency Code
-     * @var string
-     * **/
+     * @param string $currencyCode
+     * */
     private string $currencyCode = 'USD';
 
-    /*
+    /**
      * Currency Code
-     * @var string
-     * **/
+     * Default value set to Europe's Currency Code
+     * @param string $pairWithCurrencyCode
+     * */
     private string $pairWithCurrencyCode = 'EUR';
 
 
     private string $exchangeRateUrl;
+
+
+    private array $data;
 
     /**
      * @throws CurrencyException
@@ -41,9 +48,11 @@ class CurrencyConverter
     }
 
     /**
+     * @param string $currencyCode
+     * @return ExchangeRate
      * @throws CurrencyException
      */
-    public function standardResponse(string $currencyCode): mixed
+    public function standardResponse(string $currencyCode): self
     {
         $this->validateCurrencyCode($currencyCode);
 
@@ -57,11 +66,15 @@ class CurrencyConverter
         if (isset($data['error']) && $data['result'] === "error") {
             throw new CurrencyException($data['message'] ?? 'Unknown error');
         }
-        return $data;
+        $this->data = $data;
 
+        return $this;
     }
 
     /**
+     * @param string $currencyCode
+     * @param string|null $pairWithCurrencyCode
+     * @return ExchangeRate
      * @throws CurrencyException
      */
     public function conversionFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): mixed
@@ -83,10 +96,16 @@ class CurrencyConverter
     }
 
     /**
+     * @param float $amount
+     * @param string $currencyCode
+     * @param string $pairWithCurrencyCode
+     * @return ExchangeRate
      * @throws CurrencyException
      */
-    public function pairConversionWithAmount(float $amount, string $currencyCode, string $pairWithCurrencyCode): mixed
+    public function pairConversionWithAmount(float $amount, string $currencyCode, string $pairWithCurrencyCode): self
     {
+
+        $this->conversionFromTo($currencyCode, $pairWithCurrencyCode);
 
         $response = Http::get("$this->exchangeRateUrl/pair/$this->currencyCode/$this->pairWithCurrencyCode/$amount");
 
@@ -100,34 +119,8 @@ class CurrencyConverter
             throw new CurrencyException($data['message'] ?? 'Unknown error');
         }
 
-
-        return $data;
+        $this->data;
+        return $this;
     }
 
-    /**
-     * @throws CurrencyException
-     */
-    private function validateCurrencyCode(string $currencyCode): void
-    {
-        if (strlen($currencyCode) !== 3) {
-            throw new CurrencyException("Currency Code must be 3 characters long.");
-        }
-
-        $this->currencyCode = strtoupper($currencyCode);
-    }
-
-    /**
-     * @throws CurrencyException
-     */
-    private function validateCurrencyFromTo(string $currencyCode, ?string $pairWithCurrencyCode = null): void
-    {
-        $this->validateCurrencyCode($currencyCode);
-
-        if ($pairWithCurrencyCode !== null) {
-            if (strlen($pairWithCurrencyCode) !== 3) {
-                throw new CurrencyException("Pair Currency Code must be 3 characters long.");
-            }
-            $this->pairWithCurrencyCode = strtoupper($pairWithCurrencyCode);
-        }
-    }
 }
